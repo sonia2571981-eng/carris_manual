@@ -463,6 +463,7 @@ const App: React.FC = () => {
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between">
                 <button
                   onClick={() => handleDeleteInspection(selectedInspection.id)}
+                  type="button"
                   className="px-4 py-2 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm font-medium hover:bg-red-100 flex items-center transition-colors"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
