@@ -5,7 +5,7 @@ import { VehicleList } from './components/VehicleList';
 import { ChecklistManager } from './components/ChecklistManager';
 import { getInspections, exportInspectionsToExcel, deleteInspection } from './services/dataService';
 import { InspectionRecord, VehicleType, InspectionStatus, ChecklistItemResult } from './types';
-import { ClipboardList, BarChart2, Settings, Download, Bus, Train, Filter, X, Loader2, Calendar, User, Eye, CheckCircle, AlertCircle, MinusCircle, Lock, Unlock, ShieldCheck, Trash2 } from 'lucide-react';
+import { ClipboardList, BarChart2, Settings, Download, Bus, Train, Filter, X, Loader2, Calendar, User, Eye, CheckCircle, AlertCircle, MinusCircle, Lock, Unlock, ShieldCheck, Trash2,TramFront } from 'lucide-react';
 
 const ADMIN_PIN = "1234"; // Código de acesso para Administrador
 
