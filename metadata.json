@@ -1,0 +1,7 @@
+{
+  "name": "CARRIS Inspect - Manutenção e Verificação",
+  "description": "Aplicação para verificação do estado da frota (autocarros e elétricos) antes da saída, com avaliação de qualidade da manutenção e dashboard de análise.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
