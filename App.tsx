@@ -5,7 +5,7 @@ import { VehicleList } from './components/VehicleList';
 import { ChecklistManager } from './components/ChecklistManager';
 import { getInspections, exportInspectionsToExcel, deleteInspection } from './services/dataService';
 import { InspectionRecord, VehicleType, InspectionStatus, ChecklistItemResult } from './types';
-import { ClipboardList, BarChart2, Settings, Download, Bus, Train, Filter, X, Loader2, Calendar, User, Eye, CheckCircle, AlertCircle, MinusCircle, Lock, Unlock, ShieldCheck, Trash2,TramFront } from 'lucide-react';
+import { ClipboardList, BarChart2, Settings, Download, Bus, Train, Filter, X, Loader2, Calendar, User, Eye, CheckCircle, AlertCircle, MinusCircle, Lock, Unlock, ShieldCheck, Trash2 } from 'lucide-react';
 
 const ADMIN_PIN = "1234"; // Código de acesso para Administrador
 
@@ -462,7 +462,7 @@ const App: React.FC = () => {
               {/* Modal Footer */}
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between">
                 <button
-                  onClick={() => handleDeleteInspection(selectedInspection.id)}
+                  onClick={(e) => { e.stopPropagation(); handleDeleteInspection(selectedInspection.id); }}
                   type="button"
                   className="px-4 py-2 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm font-medium hover:bg-red-100 flex items-center transition-colors"
                 >
