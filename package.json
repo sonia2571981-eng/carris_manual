@@ -1,7 +1,7 @@
 {
   "name": "carris-inspect",
   "private": true,
-  "version": "1.0.11",
+  "version": "1.0.12",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,10 +11,10 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "lucide-react": "^0.263.1",
-    "recharts": "^2.7.2",
+    "lucide-react": "^0.460.0",
+    "recharts": "^2.13.0",
     "xlsx": "^0.18.5",
-    "firebase": "^10.7.1"
+    "firebase": "^10.14.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
