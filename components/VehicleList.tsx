@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Vehicle, VehicleType } from '../types';
 import { getVehicles, saveVehicles, parseVehicleExcel } from '../services/dataService';
@@ -49,8 +48,11 @@ export const VehicleList: React.FC = () => {
     XLSX.writeFile(wb, "Template_Veiculos_CARRIS.xlsx");
   };
 
-  // Helper para verificar se é Elétrico
-  const isTram = (type: string) => type === VehicleType.TRAM_REMODELADO || type === VehicleType.TRAM_ARTICULADO;
+  // Helper para verificar se é Elétrico - AGORA MAIS ROBUSTO (Case Insensitive e sem acentos)
+  const isTram = (type: string) => {
+    const t = type.toLowerCase();
+    return t.includes('elét') || t.includes('elet') || t.includes('tram') || t.includes('remodelado') || t.includes('articulado');
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 mb-20 md:mb-0">

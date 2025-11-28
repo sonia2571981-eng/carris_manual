@@ -5,7 +5,7 @@ import { VehicleList } from './components/VehicleList';
 import { ChecklistManager } from './components/ChecklistManager';
 import { getInspections, exportInspectionsToExcel, deleteInspection } from './services/dataService';
 import { InspectionRecord, VehicleType, InspectionStatus, ChecklistItemResult } from './types';
-import { ClipboardList, BarChart2, Settings, Download, Bus, Filter, X, Loader2, Calendar, User, Eye, CheckCircle, AlertCircle, MinusCircle, Lock, Unlock, ShieldCheck, Trash2 } from 'lucide-react';
+import { ClipboardList, BarChart2, Settings, Download, Bus, TramFront, Filter, X, Loader2, Calendar, User, Eye, CheckCircle, AlertCircle, MinusCircle, Lock, Unlock, ShieldCheck, Trash2 } from 'lucide-react';
 
 const ADMIN_PIN = "1234"; // Código de acesso para Administrador
 
@@ -180,8 +180,11 @@ const App: React.FC = () => {
     );
   }
 
-  // Helper para verificar se é Elétrico
-  const isTram = (type: string) => type === VehicleType.TRAM_REMODELADO || type === VehicleType.TRAM_ARTICULADO;
+  // Helper para verificar se é Elétrico - AGORA ABRANGENTE
+  const isTram = (type: string) => {
+    const t = type.toLowerCase();
+    return t.includes('elét') || t.includes('elet') || t.includes('tram') || t.includes('remodelado') || t.includes('articulado');
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans text-gray-900 pb-24 md:pb-8">
@@ -331,7 +334,7 @@ const App: React.FC = () => {
                                 <div className="flex justify-between items-start mb-3">
                                   <div className="flex items-center">
                                     <div className={`p-2 rounded-lg mr-3 ${isTram(ins.vehicle.type) ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
-                                      <Bus className="w-5 h-5" />
+                                      {isTram(ins.vehicle.type) ? <TramFront className="w-5 h-5" /> : <Bus className="w-5 h-5" />}
                                     </div>
                                     <div>
                                       <span className="block text-xl font-bold text-gray-800">#{ins.vehicle.fleetNumber}</span>

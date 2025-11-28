@@ -23,8 +23,24 @@ const COLLECTIONS = {
 
 const CONFIG_DOC_ID = 'main_settings';
 
-// --- Helpers para Fallback Local (caso Firebase falhe ou não esteja configurado) ---
+// --- Helpers ---
+
 export const isFirebaseReady = () => !!db;
+
+// Gerador de UUID compatível com todos os browsers/telemóveis
+export const generateUUID = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    try {
+      return crypto.randomUUID();
+    } catch (e) {
+      // Fallback se falhar
+    }
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
 
 // --- Vehicles ---
 
@@ -54,8 +70,6 @@ export const saveVehicles = async (vehicles: Vehicle[]) => {
     return;
   }
 
-  // Em Firestore, idealmente salvamos um por um ou em batch. 
-  // Simplificação: Vamos salvar cada veiculo com o ID = fleetNumber para facilitar updates
   try {
     const promises = vehicles.map(v => 
       setDoc(doc(db, COLLECTIONS.VEHICLES, v.fleetNumber), v)
@@ -67,7 +81,6 @@ export const saveVehicles = async (vehicles: Vehicle[]) => {
 };
 
 export const getVehicleByFleet = async (fleetNumber: string): Promise<Vehicle | undefined> => {
-  // Otimização: Buscar direto pelo ID se possível
   if (!isFirebaseReady()) {
     const vehicles = JSON.parse(localStorage.getItem('carris_vehicles') || JSON.stringify(DEFAULT_VEHICLES));
     return vehicles.find((v: Vehicle) => v.fleetNumber === fleetNumber);
@@ -148,14 +161,24 @@ export const saveInspection = async (record: InspectionRecord) => {
   }
 
   try {
-    // 1. Salvar a inspeção
-    await setDoc(doc(db, COLLECTIONS.INSPECTIONS, record.id), record);
+    // 1. LIMPEZA DE DADOS (CRÍTICO): Remover campos undefined que bloqueiam o Firebase
+    // O JSON.stringify remove automaticamente chaves com valor undefined
+    const cleanRecord = JSON.parse(JSON.stringify(record));
 
-    // 2. Atualizar a data de inspeção no veículo
-    const vehicleRef = doc(db, COLLECTIONS.VEHICLES, record.vehicle.fleetNumber);
-    await updateDoc(vehicleRef, {
-      lastInspectionDate: record.date
-    });
+    const inspectionRef = doc(db, COLLECTIONS.INSPECTIONS, cleanRecord.id);
+    const vehicleRef = doc(db, COLLECTIONS.VEHICLES, cleanRecord.vehicle.fleetNumber);
+
+    // 2. PARALELISMO: Enviar inspeção e atualizar veículo ao mesmo tempo
+    const p1 = setDoc(inspectionRef, cleanRecord);
+    
+    // Atualizar data da última inspeção no veículo (merge para não apagar outros dados)
+    // Se o veículo não existir na DB (ex: só no excel local), o merge cria-o.
+    const p2 = setDoc(vehicleRef, {
+      lastInspectionDate: cleanRecord.date
+    }, { merge: true });
+
+    await Promise.all([p1, p2]);
+
   } catch (error) {
     console.error("Erro ao salvar inspeção:", error);
     throw error;
@@ -172,6 +195,7 @@ export const deleteInspection = async (id: string) => {
 
   try {
     await deleteDoc(doc(db, COLLECTIONS.INSPECTIONS, id));
+    console.log("Documento eliminado com sucesso:", id);
   } catch (error) {
     console.error("Erro ao apagar inspeção:", error);
     throw error;

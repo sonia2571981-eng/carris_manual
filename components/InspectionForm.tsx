@@ -1,8 +1,6 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { Vehicle, ChecklistItemResult, InspectionStatus, AppConfig, InspectionRecord, VehicleType } from '../types';
-import { getVehicleByFleet, saveInspection, getConfig } from '../services/dataService';
+import { getVehicleByFleet, saveInspection, getConfig, generateUUID } from '../services/dataService';
 import { Search, CheckCircle, Save, Loader2, ArrowLeft } from 'lucide-react';
 
 interface Props {
@@ -32,7 +30,7 @@ export const InspectionForm: React.FC<Props> = ({ onCancel, onSuccess }) => {
     setError('');
     setLoadingLookup(true);
     try {
-      const v = await getVehicleByFleet(fleetInput);
+      const v = await getVehicleByFleet(fleetInput.trim());
       if (v) {
         setVehicle(v);
         initializeChecklist(v.type);
@@ -77,19 +75,27 @@ export const InspectionForm: React.FC<Props> = ({ onCancel, onSuccess }) => {
 
     setIsSubmitting(true);
 
-    const record: InspectionRecord = {
-      id: crypto.randomUUID(),
-      date: new Date().toISOString(),
-      inspectorName,
-      vehicle,
-      results: checklistResults,
-      overallComments
-    };
+    try {
+      // Usar a nova função generateUUID para garantir compatibilidade
+      const newId = generateUUID();
+      
+      const record: InspectionRecord = {
+        id: newId,
+        date: new Date().toISOString(),
+        inspectorName,
+        vehicle,
+        results: checklistResults,
+        overallComments
+      };
 
-    await saveInspection(record);
-    
-    setIsSubmitting(false);
-    onSuccess();
+      await saveInspection(record);
+      onSuccess();
+    } catch (err: any) {
+      console.error(err);
+      const msg = err?.message || "Erro desconhecido";
+      alert(`Erro ao guardar: ${msg}. Tente novamente.`);
+      setIsSubmitting(false); // Desbloqueia o botão em caso de erro
+    }
   };
 
   if (!config) return <div className="p-6 flex justify-center"><Loader2 className="animate-spin" /></div>;
